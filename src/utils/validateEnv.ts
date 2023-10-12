@@ -9,7 +9,7 @@ function validateEnv() {
     MONGO_PASSWORD: str(),
     MONGO_PATH: str(),
     MONGO_USER: str(),
-    PORT: port({ default: 3000 }),
+    PORT: port({ default: 8000 }),
   });
 }
 

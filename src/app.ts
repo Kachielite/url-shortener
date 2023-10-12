@@ -24,12 +24,14 @@ class App {
 
   public listen(): void {
     this.express.listen(this.port, () =>
-      console.log(`INFO: App listening on port ${this.port}`),
+      console.log(
+        `INFO App listening on port ${this.port} \nINFO Initializing DB connection`,
+      ),
     );
   }
 
   private initializeMiddlewares(): void {
-    this.express.use(cors);
+    this.express.use(cors());
     this.express.use(helmet());
     this.express.use(morgan("dev"));
     this.express.use(express.json());
@@ -43,18 +45,19 @@ class App {
     });
   }
 
-  private initializeErrorHandler(): void {
-    // @ts-ignore
-    this.express.use(ErrorHandlerMiddleware);
-  }
-
   private initializeDatabaseConnection(): void {
     const { MONGO_USER, MONGO_PASSWORD, MONGO_PATH } = process.env;
     mongoose
       .connect(
         `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}/?retryWrites=true&w=majority`,
       )
-      .then(() => console.log(`INFO: DB connection successfully initialized`));
+      .then(() => console.log(`INFO DB connection successfully initialized`))
+      .catch(() => console.log("ERROR DB connection initialization failed"));
+  }
+
+  private initializeErrorHandler(): void {
+    // @ts-ignore
+    this.express.use(ErrorHandlerMiddleware);
   }
 }
 
