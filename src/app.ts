@@ -7,10 +7,12 @@ import compression from "compression";
 import * as mongoose from "mongoose";
 import ErrorHandlerMiddleware from "@/middleware/error.middleware";
 import { Controller } from "@/utils/interfaces/controller.interface";
+import ShortenerController from "@/resources/shortener/shortener.controller";
 
 class App {
   private express: Application;
   private readonly port: number;
+  private Shortener = new ShortenerController();
 
   constructor(controllers: Controller[], port: number) {
     this.express = express();
@@ -18,6 +20,7 @@ class App {
 
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
+    this.initializeRedirectRouter();
     this.initializeDatabaseConnection();
     this.initializeErrorHandler();
   }
@@ -43,6 +46,10 @@ class App {
     controllers.forEach((controller: Controller) => {
       this.express.use("/api", controller.router);
     });
+  }
+
+  private initializeRedirectRouter(): void {
+    this.express.use("/:shortCode", this.Shortener.router);
   }
 
   private initializeDatabaseConnection(): void {
