@@ -9,6 +9,7 @@ const ShortenerModel = new Schema(
     },
     short_url: {
       type: String,
+      unique: true,
     },
     clicks: {
       type: Number,

@@ -1,6 +1,7 @@
 import ShortenerModel from "@/resources/shortener/shortener.model";
 import generateShortURL from "@/utils/helpers/shorturl-generator.helper";
 import { ShortenerInterface } from "@/resources/shortener/shortener.interface";
+import mongoose from "mongoose";
 
 class ShortenerService {
   private shortener = ShortenerModel;
@@ -18,7 +19,7 @@ class ShortenerService {
     short_url: string,
   ): Promise<ShortenerInterface | Error | void> {
     try {
-      const urlData = await this.shortener.findOneAndUpdate({ short_url });
+      const urlData = await this.shortener.findOne({ short_url });
       if (!urlData) {
         throw new Error("Long url not found");
       }
@@ -29,14 +30,50 @@ class ShortenerService {
         return await urlData.save();
       }
     } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  public async customize(custom_code: string, long_url: string) {
+    try {
+      const checkCustomCodeIsNotUsed = await this.shortener.findOne({
+        short_url: custom_code,
+      });
+
+      if (checkCustomCodeIsNotUsed) {
+        throw new Error("Custom code provided already in use");
+      }
+      return await this.shortener.create({
+        short_url: custom_code,
+        long_url,
+        clicks: 0,
+      });
+    } catch (error: any) {
       console.log(error);
       throw new Error(error);
     }
   }
 
-  public async customize(custom_code: string) {
+  public async delete(ids: string[]) {
     try {
-    } catch (error) {}
+      const objectIds = ids.map((id) => new mongoose.Types.ObjectId(id));
+      await this.shortener.deleteOne({ _id: { $in: objectIds } });
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  public async getAll(page: number = 0) {
+    const limit: number = 10;
+    try {
+      return await this.shortener
+        .find({})
+        .limit(limit)
+        .skip(limit * page)
+        .sort({ clicks: "asc" });
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
 }
 

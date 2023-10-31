@@ -5,4 +5,9 @@ const generate = Joi.object({
   long_url: Joi.string().required(),
 });
 
-export default { generate };
+const customize = Joi.object({
+  custom_code: Joi.string(),
+  long_url: Joi.string().required(),
+});
+
+export default { generate, customize };
