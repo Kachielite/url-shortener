@@ -7,10 +7,12 @@ import compression from "compression";
 import * as mongoose from "mongoose";
 import ErrorHandlerMiddleware from "@/middleware/error.middleware";
 import { Controller } from "@/utils/interfaces/controller.interface";
+import ShortenerController from "@/resources/shortener/shortener.controller";
 
 class App {
   private express: Application;
   private readonly port: number;
+  private Shortener = new ShortenerController();
 
   constructor(controllers: Controller[], port: number) {
     this.express = express();
@@ -18,18 +20,21 @@ class App {
 
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
+    this.initializeRedirectRouter();
     this.initializeDatabaseConnection();
     this.initializeErrorHandler();
   }
 
   public listen(): void {
     this.express.listen(this.port, () =>
-      console.log(`INFO: App listening on port ${this.port}`),
+      console.log(
+        `INFO App listening on port ${this.port} \nINFO Initializing DB connection`,
+      ),
     );
   }
 
   private initializeMiddlewares(): void {
-    this.express.use(cors);
+    this.express.use(cors());
     this.express.use(helmet());
     this.express.use(morgan("dev"));
     this.express.use(express.json());
@@ -43,9 +48,8 @@ class App {
     });
   }
 
-  private initializeErrorHandler(): void {
-    // @ts-ignore
-    this.express.use(ErrorHandlerMiddleware);
+  private initializeRedirectRouter(): void {
+    this.express.use("/:shortCode", this.Shortener.router);
   }
 
   private initializeDatabaseConnection(): void {
@@ -54,7 +58,13 @@ class App {
       .connect(
         `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}/?retryWrites=true&w=majority`,
       )
-      .then(() => console.log(`INFO: DB connection successfully initialized`));
+      .then(() => console.log(`INFO DB connection successfully initialized`))
+      .catch(() => console.log("ERROR DB connection initialization failed"));
+  }
+
+  private initializeErrorHandler(): void {
+    // @ts-ignore
+    this.express.use(ErrorHandlerMiddleware);
   }
 }
 
