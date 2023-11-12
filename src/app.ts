@@ -8,11 +8,14 @@ import * as mongoose from "mongoose";
 import ErrorHandlerMiddleware from "@/middleware/error.middleware";
 import { Controller } from "@/utils/interfaces/controller.interface";
 import ShortenerController from "@/resources/shortener/shortener.controller";
+import BotController from "@/resources/bot/bot.controller";
 
 class App {
   private express: Application;
   private readonly port: number;
   private Shortener = new ShortenerController();
+
+  private bot = new BotController()
 
   constructor(controllers: Controller[], port: number) {
     this.express = express();
@@ -22,6 +25,7 @@ class App {
     this.initializeControllers(controllers);
     this.initializeRedirectRouter();
     this.initializeDatabaseConnection();
+    this.initializeBot()
     this.initializeErrorHandler();
   }
 
@@ -42,6 +46,7 @@ class App {
     this.express.use(compression());
   }
 
+
   private initializeControllers(controllers: Controller[]): void {
     controllers.forEach((controller: Controller) => {
       this.express.use("/api", controller.router);
@@ -60,6 +65,10 @@ class App {
       )
       .then(() => console.log(`INFO DB connection successfully initialized`))
       .catch(() => console.log("ERROR DB connection initialization failed"));
+  }
+
+  private initializeBot(): void {
+    this.bot.initializeBotListeners()
   }
 
   private initializeErrorHandler(): void {
