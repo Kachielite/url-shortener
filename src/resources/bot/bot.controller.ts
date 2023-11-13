@@ -14,21 +14,7 @@ class BotController {
 
   //Start Message
   private initialMessage = () => {
-    this.bot.onText(/\/start/, (msg: Message) => {
-      const chatId = msg.chat.id;
-      this.bot.sendMessage(
-        chatId,
-        "Hello! This bot can help you shorten long urls. To use it, please choose an option below:",
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: "Shorten url", callback_data: "shorten_url" }],
-              [{ text: "Customize short url", callback_data: "customize_url" }],
-            ],
-          },
-        },
-      );
-    });
+    this.BotService.initialMessage(this.bot);
   };
 
   private botListeners = () => {
