@@ -28,6 +28,7 @@
     "@types/morgan": "^1.9.6",
     "@types/node": "^20.8.4",
     "@types/node-telegram-bot-api": "^0.63.1",
+    "@types/qrcode": "^1.5.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
     "eslint": "^8.51.0",
@@ -48,7 +49,8 @@
     "module-alias": "^2.2.3",
     "mongoose": "^7.6.1",
     "morgan": "^1.10.0",
-    "node-telegram-bot-api": "^0.64.0"
+    "node-telegram-bot-api": "^0.64.0",
+    "qrcode": "^1.5.3"
   },
   "_moduleAliases": {
     "@/resources": "dist/resources",

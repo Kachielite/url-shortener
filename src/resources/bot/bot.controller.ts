@@ -10,11 +10,21 @@ class BotController {
     this.initialMessage();
     this.botListeners();
     this.botResponder();
+    this.personaliser();
+    this.shortener();
   }
 
   //Start Message
   private initialMessage = () => {
     this.BotService.initialMessage(this.bot);
+  };
+
+  private shortener = () => {
+    this.BotService.shortenerService(this.bot);
+  };
+
+  private personaliser = () => {
+    this.BotService.personalizeService(this.bot);
   };
 
   private botListeners = () => {
